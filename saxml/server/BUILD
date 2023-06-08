@@ -269,3 +269,13 @@ pytype_strict_binary(
         ":model_service_main_lib",
     ],
 )
+
+pytype_strict_binary(
+    name = "export_method",
+    srcs = ["export_method.py"],
+    python_version = "PY3",
+    srcs_version = "PY3",
+    deps = [
+        "//saxml/server/pax/lm:all_imports",
+    ],
+)

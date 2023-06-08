@@ -13,7 +13,9 @@
 # limitations under the License.
 """np_tf_sess_wrapper with more efficient PyTree."""
 
+import jax
 from jax import tree_util
+import numpy as np
 from saxml.server.tf import np_tf_sess_wrapper
 
 # nested -> sequence.
@@ -23,5 +25,16 @@ np_tf_sess_wrapper.tree_unflatten = tree_util.tree_unflatten
 # function, tree -> tree.
 np_tf_sess_wrapper.tree_map = tree_util.tree_map
 
-wrap_tf_session = np_tf_sess_wrapper.wrap_tf_session
+
+# wrap_tf_session = np_tf_sess_wrapper.wrap_tf_session
+# Replace wrap_tf_session with an eager equivalent to circumvent a segfault.
+def wrap_tf_session(fun, fix_non_batch_dims=True):
+  del fix_non_batch_dims
+
+  def wrapped_fun(*args):
+    return jax.tree_map(np.asarray, fun(*args))
+
+  return wrapped_fun
+
+
 wrap_tf_session_class_member = np_tf_sess_wrapper.wrap_tf_session_class_member
